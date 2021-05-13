@@ -53,9 +53,9 @@ static void freeIters(NpyIter **iters, Py_ssize_t length) {
   }
 }
 
-static void printByRow(PyObject *arrList) {
+static void printByColumn(PyObject *arrList) {
   Py_ssize_t colcount = PyObject_Length(arrList);
-  printf("Here is the data printed by row\n");
+  printf("Here is the data printed by column\n");
   for (Py_ssize_t i = 0; i < colcount; i++) {
     PyArrayObject *arr = (PyArrayObject *) PyList_GET_ITEM(arrList, i);
 
@@ -82,17 +82,17 @@ static void printByRow(PyObject *arrList) {
     } while(iternext(iter));
     
     NpyIter_Deallocate(iter);
-    printf("\n"); // flush buffer
+    printf("\n");
   }
 }
 
-static void printByColumn(PyObject *arrList) {
+static void printByRow(PyObject *arrList, Py_ssize_t rowcount) {
   Py_ssize_t colcount = PyObject_Length(arrList);
-  printf("Here is the data printed by column\n");
+  printf("Here is the data printed by row\n");
   NpyIter **npyIters = initiateIters(arrList);
 
   // 2 hard coded from input example; should replace with df dims  
-  for (Py_ssize_t rowindex = 0; rowindex < 2; rowindex++) { 
+  for (Py_ssize_t rowindex = 0; rowindex < rowcount; rowindex++) { 
     for (Py_ssize_t i = 0; i < colcount; i++) {
       NpyIter *iter = npyIters[i];
 
@@ -122,21 +122,34 @@ static void printByColumn(PyObject *arrList) {
   freeIters(npyIters, colcount);
 }
 
-PyObject *print_arrs(PyObject *self, PyObject *args, PyObject *kwargs) {
+PyObject *print_frame(PyObject *self, PyObject *args, PyObject *kwargs) {
   static char *kwlist[] = {"obj", NULL};
-  PyObject *arrList;
+  PyObject *dataframe;
 
-  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O", kwlist, &arrList)) {
+
+  if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O", kwlist, &dataframe)) {
     return NULL;
   }
 
-  printByRow(arrList);
+  PyObject *mgr = PyObject_GetAttrString(dataframe, "_mgr");
+  if (mgr == NULL) {
+    return NULL;
+  }
+  
+  PyObject *arrList = PyObject_GetAttrString(mgr, "column_arrays");
+  Py_DECREF(mgr);
+  if (arrList == NULL) {
+    return NULL;
+  }
+
+  Py_ssize_t df_len = PyObject_Length(dataframe);
+  printByRow(arrList, df_len);
   printByColumn(arrList);
 
   return Py_None;
 };
 static PyMethodDef methods[] = {
-  {"print_arrs", (PyCFunction)print_arrs, METH_VARARGS | METH_KEYWORDS, ""},
+  {"print_frame", (PyCFunction)print_frame, METH_VARARGS | METH_KEYWORDS, ""},
   {NULL, NULL, 0, NULL} // Sentinel
 };
 

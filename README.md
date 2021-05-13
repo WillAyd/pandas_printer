@@ -11,12 +11,12 @@ This could be initially upstreamed in pandas to simplify a lot of the JSON code 
 # How to use
 
 ```python
-import numpy as np
+import pandas as pd
 
 import libprinter
 
-arrs = [np.array([1, 2]), np.array([5, 6]), np.array([3, 4])]
-libprinter.print_arrs(arrs)
+df = pd.DataFrame([[1, 2], [3, 4], [5, 6]])
+libprinter.print_frame(df)
 ```
 
 This code should yield the following in stdout
