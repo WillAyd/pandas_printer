@@ -30,5 +30,3 @@ Here is the data printed by column
 3 4
 5 6
 ```
-
-In a near iteration we would replace `arrs` with an actual DataFrame, and internally use the new df._mgr.column_arrays property instead of manually constructing a list of arrays
