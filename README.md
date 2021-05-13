@@ -15,7 +15,7 @@ import pandas as pd
 
 import libprinter
 
-df = pd.DataFrame([[1, 2], [3, 4], [5, 6]])
+df = pd.DataFrame([[1, 3, 5], [2, 4, 6]])
 libprinter.print_frame(df)
 ```
 
@@ -23,12 +23,12 @@ This code should yield the following in stdout
 
 ```sh
 Here is the data printed by row
-1 2
-5 6
-3 4
+1 3 5
+2 4 6
 Here is the data printed by column
-1 5 3
-2 6 4
+1 2
+3 4
+5 6
 ```
 
 In a near iteration we would replace `arrs` with an actual DataFrame, and internally use the new df._mgr.column_arrays property instead of manually constructing a list of arrays
